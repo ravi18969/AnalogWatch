@@ -21,14 +21,14 @@ function tick() {
         minAngle: minutes * 6 + seconds * (360 / 3600),
         hourAngle: hours * 30 + minutes * (360 / 720)
     };
-
     return value;
 }
 
-
+//Client emit to call time function
 io.on("connection", function(client) {
     client.on("time", function(data) {
         var result = tick();
+        //Server emit back to client with hand rotation values
         io.sockets.emit("time", result);
     });
 });
