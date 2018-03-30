@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheet/main.css"> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.dev.js"></script>
+    <title>Analog watch with Socket.io</title>
+</head>
+
+<body>
+    <div class="dial">
+        <div class="dot"></div>
+        <div class="sec-hand"></div>
+        <div class="min-hand"></div>
+        <div class="hour-hand"></div>
+        <span class="twelve">12</span>
+        <span class="three">3</span>
+        <span class="six">6</span>
+        <span class="nine">9</span>
+        <span class="diallines"></span>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script>
+        var socket = io.connect("http://localhost:8000");
+
+        var dialLines = $('.diallines');
+
+        for (var i = 1; i < 60; i++) {
+            dialLines[i] = $(dialLines[i - 1]).clone()
+                .insertAfter($(dialLines[i - 1]));
+            $(dialLines[i]).css('transform', 'rotate(' + 6 * i + 'deg)');
+        }
+
+        socket.emit("time", "");
+
+        socket.on("time", function(result) {
+            // console.log(result);
+            $('.sec-hand').css('transform', 'rotate(' + result.secAngle +
+                'deg)');
+            $('.min-hand').css('transform', 'rotate(' + result.minAngle + 'deg)');
+            $('.hour-hand').css('transform', 'rotate(' +
+                result.hourAngle + 'deg)');
+            setInterval(socket.emit("time", ""), 100);
+        });
+    </script>
+</body>
+
+</html>
